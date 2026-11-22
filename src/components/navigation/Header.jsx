@@ -16,7 +16,9 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
 
-  useEffect(() => setOpen(false), [pathname]);
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
