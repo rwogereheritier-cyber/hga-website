@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Button } from '../common/Button';
-import { announcement } from '../../data/site';
+import { useStore } from '../../lib/store';
 
 const links = [
   { to: '/programmes', label: 'Programmes' },
@@ -15,6 +15,10 @@ const links = [
 export default function Header() {
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
+  const events = useStore('events');
+  const next = events
+    .filter((e) => new Date(e.start) >= Date.now())
+    .sort((a, b) => new Date(a.start) - new Date(b.start))[0];
 
   useEffect(() => {
     setOpen(false);
@@ -22,12 +26,15 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
-      <div className="bg-maroon px-4 py-2 text-center text-[13px] text-champagne">
-        {announcement.text} ·{' '}
-        <Link to={announcement.href} className="text-white underline underline-offset-2">
-          {announcement.cta}
-        </Link>
-      </div>
+      {next && (
+        <div className="bg-maroon px-4 py-2 text-center text-[13px] text-champagne">
+          {next.title} · {new Date(next.start).toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short' })} ·{' '}
+          {next.format} ·{' '}
+          <Link to={`/events/${next.id}`} className="text-white underline underline-offset-2">
+            Reserve your seat
+          </Link>
+        </div>
+      )}
       <div className="border-b border-hairline">
         <div className="container-page flex h-16 items-center justify-between gap-6">
           <Link to="/" className="font-display text-[18px] text-charcoal">

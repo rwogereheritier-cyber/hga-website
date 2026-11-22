@@ -1,7 +1,9 @@
 import { useSyncExternalStore } from 'react';
+import { seedArticles, seedBooks, seedEvents } from '../data/content';
 
 // Prototype data store. Persists to localStorage so public actions (bookings, payments,
-// subscriptions) appear in the admin dashboard in the same browser.
+// registrations, orders, messages, subscriptions) appear in the admin dashboard in the same
+// browser, and admin edits to events, articles and books appear on the public site.
 // Replace with API calls when a real backend is added.
 
 const KEY = 'hga.store.v1';
@@ -11,6 +13,11 @@ const seed = {
   payments: [],
   subscribers: [],
   registrations: [],
+  orders: [],
+  messages: [],
+  events: seedEvents,
+  articles: seedArticles,
+  books: seedBooks,
 };
 
 function load() {
@@ -51,6 +58,12 @@ export function useStore(key) {
 
 export const getState = () => state;
 
+export function resetStore() {
+  state = seed;
+  save();
+  listeners.forEach((l) => l());
+}
+
 export function makeRef(prefix) {
   const n = Math.floor(Math.random() * 36 ** 5)
     .toString(36)
@@ -61,6 +74,23 @@ export function makeRef(prefix) {
 
 export function addBooking(booking, payment) {
   update((s) => ({ ...s, bookings: [booking, ...s.bookings], payments: [payment, ...s.payments] }));
+}
+
+export function addRegistration(reg, payment) {
+  update((s) => ({
+    ...s,
+    registrations: [reg, ...s.registrations],
+    payments: payment ? [payment, ...s.payments] : s.payments,
+    events: s.events.map((e) => (e.id === reg.eventId ? { ...e, registered: e.registered + 1 } : e)),
+  }));
+}
+
+export function addOrder(order, payment) {
+  update((s) => ({ ...s, orders: [order, ...s.orders], payments: [payment, ...s.payments] }));
+}
+
+export function addMessage(msg) {
+  update((s) => ({ ...s, messages: [msg, ...s.messages] }));
 }
 
 export function addSubscriber(sub) {

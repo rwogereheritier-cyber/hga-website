@@ -4,8 +4,9 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Button, LinkAction } from '../../components/common/Button';
 import ImagePlaceholder from '../../components/common/ImagePlaceholder';
 import Reveal from '../../components/common/Reveal';
-import { currency, events, faqs, programmes, stats, testimonial } from '../../data/site';
-import { addSubscriber } from '../../lib/store';
+import { currency, faqs, programmes, stats, testimonial } from '../../data/site';
+import { addSubscriber, useStore } from '../../lib/store';
+import { priceLabel } from '../../lib/format';
 
 function Hero() {
   return (
@@ -100,6 +101,12 @@ function Founder() {
 }
 
 function Events() {
+  const all = useStore('events');
+  const now = Date.now();
+  const events = all
+    .filter((e) => new Date(e.start) >= now)
+    .sort((a, b) => new Date(a.start) - new Date(b.start))
+    .slice(0, 3);
   return (
     <section className="mx-auto w-full max-w-[960px] px-6 py-section-sm md:px-8 md:py-section">
       <Reveal className="mb-14 flex flex-wrap items-end justify-between gap-6">
@@ -109,10 +116,14 @@ function Events() {
       <ul className="border-b border-hairline">
         {events.map((e) => (
           <li key={e.id} className="flex flex-wrap items-center gap-x-10 gap-y-2 border-t border-hairline py-8">
-            <span className="w-[90px] text-small text-ink-muted">{e.date}</span>
+            <span className="w-[90px] text-small text-ink-muted">
+              {new Date(e.start).toLocaleDateString([], { day: 'numeric', month: 'short' })}
+            </span>
             <span className="flex min-w-[260px] flex-1 flex-col gap-1.5">
               <span className="text-[21px] font-medium">{e.title}</span>
-              <span className="text-small text-ink-muted">{e.meta}</span>
+              <span className="text-small text-ink-muted">
+                {e.format} · {e.duration} min · {priceLabel(e.price)}
+              </span>
             </span>
             <LinkAction to={`/events/${e.id}`}>Register</LinkAction>
           </li>

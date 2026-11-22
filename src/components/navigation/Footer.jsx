@@ -11,6 +11,14 @@ const columns = [
     ],
   },
   {
+    title: 'Learn',
+    links: [
+      { to: '/events', label: 'Events' },
+      { to: '/resources', label: 'Articles' },
+      { to: '/books', label: 'Books' },
+    ],
+  },
+  {
     title: 'Academy',
     links: [
       { to: '/about', label: 'About' },

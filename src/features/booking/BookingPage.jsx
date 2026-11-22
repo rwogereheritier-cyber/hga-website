@@ -1,7 +1,11 @@
-import { cloneElement, useEffect, useId, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { Button } from '../../components/common/Button';
+import CardFields from '../../components/common/CardFields';
+import { emptyCard, last4, validateCard } from '../../lib/forms';
+import Field from '../../components/common/Field';
+import { fieldClass } from '../../lib/forms';
 import { consultations, countries, getConsultation } from '../../data/services';
 import { currency } from '../../data/site';
 import { addBooking, getState, makeRef, useStore } from '../../lib/store';
@@ -9,29 +13,6 @@ import { buildSlots, fmtDate, fmtLongDate, fmtTime, icsStamp, visitorZoneLabel }
 import Calendar from './Calendar';
 
 const STEPS = ['Service', 'Date & time', 'Your details', 'Review & pay'];
-const field =
-  'mt-1.5 block h-[52px] w-full rounded-md border bg-white px-4 text-[16px] text-charcoal transition-colors focus:border-burgundy focus:outline-none';
-
-function Field({ label, error, children, hint }) {
-  const id = useId();
-  const msgId = `${id}-msg`;
-  const control = cloneElement(children, {
-    id,
-    'aria-invalid': error ? true : undefined,
-    'aria-describedby': error || hint ? msgId : undefined,
-  });
-  return (
-    <div className="flex flex-col text-caption text-ink-muted">
-      <label htmlFor={id}>{label}</label>
-      {control}
-      {(error || hint) && (
-        <span id={msgId} className={`mt-1.5 ${error ? 'text-danger' : ''}`} role={error ? 'alert' : undefined}>
-          {error || hint}
-        </span>
-      )}
-    </div>
-  );
-}
 
 function Summary({ service, slot, step, onNext, nextLabel, disabled, busy }) {
   return (
@@ -65,18 +46,6 @@ function Summary({ service, slot, step, onNext, nextLabel, disabled, busy }) {
       </p>
     </aside>
   );
-}
-
-function luhn(num) {
-  let sum = 0;
-  let dbl = false;
-  for (let i = num.length - 1; i >= 0; i--) {
-    let d = +num[i];
-    if (dbl) d = d * 2 > 9 ? d * 2 - 9 : d * 2;
-    sum += d;
-    dbl = !dbl;
-  }
-  return sum % 10 === 0;
 }
 
 function download(name, text, type) {
@@ -173,7 +142,7 @@ export default function BookingPage() {
   const [day, setDay] = useState(null);
   const [slot, setSlot] = useState(null);
   const [details, setDetails] = useState({ name: '', email: '', phone: '', country: '', notes: '' });
-  const [card, setCard] = useState({ name: '', number: '', expiry: '', cvc: '' });
+  const [card, setCard] = useState(emptyCard);
   const [errors, setErrors] = useState({});
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(null);
@@ -211,21 +180,10 @@ export default function BookingPage() {
     return !Object.keys(e).length;
   }
 
-  function validateCard() {
-    const e = {};
-    const num = card.number.replace(/\D/g, '');
-    if (card.name.trim().length < 2) e.name = 'Enter the name on the card.';
-    if (num.length < 13 || num.length > 19 || !luhn(num)) e.number = 'Enter a valid card number.';
-    const m = card.expiry.match(/^(\d{2})\s*\/\s*(\d{2})$/);
-    const now = new Date();
-    if (!m || +m[1] < 1 || +m[1] > 12 || new Date(2000 + +m[2], +m[1], 1) <= now) e.expiry = 'Enter a future date as MM/YY.';
-    if (!/^\d{3,4}$/.test(card.cvc)) e.cvc = 'Enter the 3 or 4 digit code.';
-    setErrors(e);
-    return !Object.keys(e).length;
-  }
-
   function pay() {
-    if (!validateCard()) return;
+    const cardErrors = validateCard(card);
+    setErrors(cardErrors);
+    if (Object.keys(cardErrors).length) return;
     if (getState().bookings.some((b) => b.start === slot)) {
       go(1);
       setSlot(null);
@@ -257,7 +215,7 @@ export default function BookingPage() {
         amount: service.price,
         date: now,
         status: 'Paid',
-        method: `Card •••• ${card.number.replace(/\D/g, '').slice(-4)}`,
+        method: `Card •••• ${last4(card)}`,
       });
       setBusy(false);
       setDone(booking);
@@ -407,16 +365,16 @@ export default function BookingPage() {
                 {step === 2 && (
                   <form noValidate onSubmit={(e) => { e.preventDefault(); if (validateDetails()) go(3); }} className="grid max-w-[640px] gap-5 sm:grid-cols-2">
                     <Field label="Full name" error={errors.name}>
-                      <input autoComplete="name" value={details.name} onChange={(e) => setDetails({ ...details, name: e.target.value })} className={`${field} ${errors.name ? 'border-danger' : 'border-[#E2DED8]'}`} />
+                      <input autoComplete="name" value={details.name} onChange={(e) => setDetails({ ...details, name: e.target.value })} className={`${fieldClass(errors.name)}`} />
                     </Field>
                     <Field label="Email" error={errors.email}>
-                      <input type="email" autoComplete="email" value={details.email} onChange={(e) => setDetails({ ...details, email: e.target.value })} className={`${field} ${errors.email ? 'border-danger' : 'border-[#E2DED8]'}`} />
+                      <input type="email" autoComplete="email" value={details.email} onChange={(e) => setDetails({ ...details, email: e.target.value })} className={`${fieldClass(errors.email)}`} />
                     </Field>
                     <Field label="Phone (with country code)" error={errors.phone}>
-                      <input type="tel" autoComplete="tel" placeholder="+1 416 555 0100" value={details.phone} onChange={(e) => setDetails({ ...details, phone: e.target.value })} className={`${field} ${errors.phone ? 'border-danger' : 'border-[#E2DED8]'}`} />
+                      <input type="tel" autoComplete="tel" placeholder="+1 416 555 0100" value={details.phone} onChange={(e) => setDetails({ ...details, phone: e.target.value })} className={`${fieldClass(errors.phone)}`} />
                     </Field>
                     <Field label="Country" error={errors.country}>
-                      <select value={details.country} onChange={(e) => setDetails({ ...details, country: e.target.value })} className={`${field} ${errors.country ? 'border-danger' : 'border-[#E2DED8]'}`}>
+                      <select value={details.country} onChange={(e) => setDetails({ ...details, country: e.target.value })} className={`${fieldClass(errors.country)}`}>
                         <option value="">Select…</option>
                         {countries.map((c) => (
                           <option key={c}>{c}</option>
@@ -425,7 +383,7 @@ export default function BookingPage() {
                     </Field>
                     <div className="sm:col-span-2">
                       <Field label={`Consultation: ${service?.name}`} error={errors.notes} hint="What would you like help with?">
-                        <textarea rows={5} value={details.notes} onChange={(e) => setDetails({ ...details, notes: e.target.value })} className={`${field} h-auto py-3 ${errors.notes ? 'border-danger' : 'border-[#E2DED8]'}`} />
+                        <textarea rows={5} value={details.notes} onChange={(e) => setDetails({ ...details, notes: e.target.value })} className={`${fieldClass(errors.notes)} h-auto py-3`} />
                       </Field>
                     </div>
                     <button type="submit" className="sr-only">Continue to payment</button>
@@ -447,26 +405,8 @@ export default function BookingPage() {
                         </div>
                       ))}
                     </dl>
-                    <form noValidate onSubmit={(e) => { e.preventDefault(); pay(); }} className="grid gap-5 sm:grid-cols-2">
-                      <p className="text-small text-ink-muted sm:col-span-2">
-                        Demo checkout: no real payment is taken. Try 4242 4242 4242 4242, any future date and any 3 digits.
-                      </p>
-                      <div className="sm:col-span-2">
-                        <Field label="Name on card" error={errors.name}>
-                          <input autoComplete="cc-name" value={card.name} onChange={(e) => setCard({ ...card, name: e.target.value })} className={`${field} ${errors.name ? 'border-danger' : 'border-[#E2DED8]'}`} />
-                        </Field>
-                      </div>
-                      <div className="sm:col-span-2">
-                        <Field label="Card number" error={errors.number}>
-                          <input inputMode="numeric" autoComplete="cc-number" placeholder="1234 1234 1234 1234" value={card.number} onChange={(e) => setCard({ ...card, number: e.target.value.replace(/[^\d ]/g, '').slice(0, 23) })} className={`${field} ${errors.number ? 'border-danger' : 'border-[#E2DED8]'}`} />
-                        </Field>
-                      </div>
-                      <Field label="Expiry (MM/YY)" error={errors.expiry}>
-                        <input inputMode="numeric" autoComplete="cc-exp" placeholder="MM/YY" value={card.expiry} onChange={(e) => setCard({ ...card, expiry: e.target.value.slice(0, 7) })} className={`${field} ${errors.expiry ? 'border-danger' : 'border-[#E2DED8]'}`} />
-                      </Field>
-                      <Field label="Security code" error={errors.cvc}>
-                        <input inputMode="numeric" autoComplete="cc-csc" placeholder="123" value={card.cvc} onChange={(e) => setCard({ ...card, cvc: e.target.value.replace(/\D/g, '').slice(0, 4) })} className={`${field} ${errors.cvc ? 'border-danger' : 'border-[#E2DED8]'}`} />
-                      </Field>
+                    <form noValidate onSubmit={(e) => { e.preventDefault(); pay(); }}>
+                      <CardFields card={card} setCard={setCard} errors={errors} />
                       <button type="submit" className="sr-only">Pay</button>
                     </form>
                   </div>

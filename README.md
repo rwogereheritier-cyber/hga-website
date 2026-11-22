@@ -38,7 +38,10 @@ Follow the HGA design system: white page, burgundy as the single accent, gold on
 - [x] Programmes catalogue (search, filters) and programme pages
 - [x] Booking flow: 4 steps, time zones, validation, simulated payment, confirmation, .ics and summary download
 - [x] Shared demo store (localStorage): bookings, payments, newsletter subscribers
-- [ ] Events, Resources, Books, About, Corporate responsibility, Contact
+- [x] Events (tabs, search, filters, detail, registration with demo payment)
+- [x] Resources (articles, search, filters, article page, share, related)
+- [x] Books (detail, format choice, demo purchase, placeholder download) and resource library
+- [x] About, Corporate responsibility, Contact (validated form + FAQ)
 - [ ] Admin dashboard (demo login)
 
 NCLEX® and CELPIP® are trademarks of their owners; HGA is not affiliated.

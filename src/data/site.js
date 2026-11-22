@@ -2,18 +2,13 @@
 
 export const contact = {
   email: 'hello@hettyglobalacademy.com', // TODO: confirm
-  location: 'Canada', // TODO: city
+  phone: '[+1 000 000 0000]', // TODO: confirm
+  location: 'Ontario, Canada', // TODO: confirm city
   socials: [
     { label: 'TikTok', href: '#' }, // TODO: profile URL
     { label: 'Instagram', href: '#' },
     { label: 'LinkedIn', href: '#' },
   ],
-};
-
-export const announcement = {
-  text: 'NCLEX Success Masterclass · Sat 14 Dec · Online',
-  cta: 'Reserve your seat',
-  href: '/events',
 };
 
 // TODO: verify every figure with the client.
@@ -46,13 +41,6 @@ export const programmes = [
     from: 65,
     photo: 'Speaking practice',
   },
-];
-
-// TODO: real dates, prices and capacity.
-export const events = [
-  { id: 'nclex-masterclass', date: '14 Dec', title: 'NCLEX Success Masterclass', meta: 'Online · 2 hours · $35' },
-  { id: 'celpip-workshop', date: '9 Jan', title: 'CELPIP Preparation Workshop', meta: 'Online · 90 min · $25' },
-  { id: 'intl-career', date: '23 Jan', title: 'Building Your International Nursing Career', meta: 'Online · 60 min · Free' },
 ];
 
 export const testimonial = {
