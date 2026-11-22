@@ -19,6 +19,10 @@ src/
   layouts                 PublicLayout (later: AdminLayout)
   pages/public            Home, ComingSoon (temporary for unbuilt routes)
   data/site.js            Demo content — every TODO needs client confirmation
+  data/services.js        Consultations, prices and programme content
+  features/booking        Booking flow and calendar
+  lib/time.js             Availability in Hetty's time zone, shown in the visitor's
+  lib/store.js            Demo data store shared with the admin dashboard
   styles/index.css        Tailwind layers + shared classes
 tailwind.config.js        Design tokens (HGA design system v1)
 ```
@@ -31,8 +35,9 @@ Follow the HGA design system: white page, burgundy as the single accent, gold on
 
 - [x] Foundation: tokens, layout, header, footer, routes
 - [x] Home page
-- [ ] Programme pages
-- [ ] Booking flow (4 steps, simulated payment, confirmation)
+- [x] Programmes catalogue (search, filters) and programme pages
+- [x] Booking flow: 4 steps, time zones, validation, simulated payment, confirmation, .ics and summary download
+- [x] Shared demo store (localStorage): bookings, payments, newsletter subscribers
 - [ ] Events, Resources, Books, About, Corporate responsibility, Contact
 - [ ] Admin dashboard (demo login)
 

@@ -36,7 +36,7 @@
   .h-display {
     @apply font-display font-medium text-[44px] leading-[1.05] tracking-[-0.8px] md:text-display-xl;
   }
-  .h-section {
+  .title-section {
     @apply font-display font-medium text-[36px] leading-[1.1] tracking-[-0.5px] md:text-heading-1;
   }
   .h-card {

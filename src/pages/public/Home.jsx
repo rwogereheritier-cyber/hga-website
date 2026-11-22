@@ -5,6 +5,7 @@ import { Button, LinkAction } from '../../components/common/Button';
 import ImagePlaceholder from '../../components/common/ImagePlaceholder';
 import Reveal from '../../components/common/Reveal';
 import { currency, events, faqs, programmes, stats, testimonial } from '../../data/site';
+import { addSubscriber } from '../../lib/store';
 
 function Hero() {
   return (
@@ -47,7 +48,7 @@ function Paths() {
   return (
     <section className="container-page flex flex-col gap-16 pb-section-sm md:pb-section">
       <Reveal className="flex flex-col items-center gap-4 text-center">
-        <h2 className="h-section">Choose your path.</h2>
+        <h2 className="title-section">Choose your path.</h2>
         <p className="max-w-[520px] text-[19px] leading-[1.55] text-ink-muted">
           Every path starts with a one-to-one conversation with Hetty.
         </p>
@@ -86,7 +87,7 @@ function Founder() {
         </Reveal>
         <Reveal delay={0.08} className="flex flex-1 basis-[420px] flex-col gap-7">
           <span className="eyebrow">Meet the founder</span>
-          <h2 className="h-section">“I built HGA for the nurse I once was.”</h2>
+          <h2 className="title-section">“I built HGA for the nurse I once was.”</h2>
           <p className="max-w-[460px] text-[18px] leading-[1.7] text-ink-muted">
             Hetty is a Registered Nurse in Canada. She helps aspiring and internationally educated nurses prepare for exams,
             strengthen their English and build careers they are proud of.
@@ -102,7 +103,7 @@ function Events() {
   return (
     <section className="mx-auto w-full max-w-[960px] px-6 py-section-sm md:px-8 md:py-section">
       <Reveal className="mb-14 flex flex-wrap items-end justify-between gap-6">
-        <h2 className="h-section">Upcoming events.</h2>
+        <h2 className="title-section">Upcoming events.</h2>
         <LinkAction to="/events">View all</LinkAction>
       </Reveal>
       <ul className="border-b border-hairline">
@@ -143,8 +144,8 @@ function BookAndNewsletter() {
     if (!/^\S+@\S+\.\S+$/.test(email)) return setError('Enter a valid email address.');
     if (!form.get('consent')) return setError('Please tick the box to agree to emails.');
     setError('');
+    addSubscriber({ email, date: Date.now(), source: 'Homepage' });
     setSent(true);
-    // TODO: newsletter store (localStorage) shared with the admin dashboard.
   }
 
   return (
@@ -208,7 +209,7 @@ function Faq() {
   const [open, setOpen] = useState(0);
   return (
     <section className="mx-auto flex max-w-[760px] flex-col gap-10 px-6 pb-section-sm md:px-8 md:pb-section">
-      <h2 className="h-section text-center">Questions.</h2>
+      <h2 className="title-section text-center">Questions.</h2>
       <div className="border-b border-hairline">
         {faqs.map((f, i) => {
           const isOpen = open === i;
@@ -253,7 +254,7 @@ function FinalCta() {
   return (
     <section className="bg-ivory">
       <Reveal className="container-page section flex flex-col items-center gap-7 text-center">
-        <h2 className="h-section max-w-[760px] md:text-display-l">Ready for your next step?</h2>
+        <h2 className="title-section max-w-[760px] md:text-display-l">Ready for your next step?</h2>
         <p className="text-[19px] text-ink-muted">45 minutes, one to one, on Zoom.</p>
         <Button to="/consultations">Book a consultation</Button>
       </Reveal>
