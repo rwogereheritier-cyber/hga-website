@@ -1,24 +1,33 @@
 import { useSyncExternalStore } from 'react';
-import { seedArticles, seedBooks, seedEvents } from '../data/content';
+import { articleCategories, libraryResources, seedArticles, seedBooks, seedEvents } from '../data/content';
+import { defaultContent } from '../data/defaults';
+import { demoBookings, demoPayments, demoSubscribers } from '../data/demo';
+import { consultations } from '../data/services';
 
 // Prototype data store. Persists to localStorage so public actions (bookings, payments,
 // registrations, orders, messages, subscriptions) appear in the admin dashboard in the same
 // browser, and admin edits to events, articles and books appear on the public site.
 // Replace with API calls when a real backend is added.
 
-const KEY = 'hga.store.v1';
+const KEY = 'hga.store.v2';
 
 const seed = {
-  bookings: [],
-  payments: [],
-  subscribers: [],
+  bookings: demoBookings,
+  payments: demoPayments,
+  subscribers: demoSubscribers,
   registrations: [],
   orders: [],
   messages: [],
   events: seedEvents,
   articles: seedArticles,
   books: seedBooks,
+  library: libraryResources,
+  categories: articleCategories,
+  consultations,
+  content: defaultContent,
 };
+
+export const SEED = seed;
 
 function load() {
   try {
@@ -95,4 +104,25 @@ export function addMessage(msg) {
 
 export function addSubscriber(sub) {
   update((s) => ({ ...s, subscribers: [sub, ...s.subscribers.filter((x) => x.email !== sub.email)] }));
+}
+
+/** Replace one item in a collection, matched by its key field. */
+export function updateItem(collection, keyField, key, patch) {
+  update((s) => ({ ...s, [collection]: s[collection].map((x) => (x[keyField] === key ? { ...x, ...patch } : x)) }));
+}
+
+export function removeItem(collection, keyField, key) {
+  update((s) => ({ ...s, [collection]: s[collection].filter((x) => x[keyField] !== key) }));
+}
+
+export function upsertItem(collection, keyField, item, originalKey) {
+  update((s) => {
+    const list = s[collection];
+    const at = list.findIndex((x) => x[keyField] === (originalKey ?? item[keyField]));
+    return { ...s, [collection]: at === -1 ? [item, ...list] : list.map((x, i) => (i === at ? item : x)) };
+  });
+}
+
+export function setContent(patch) {
+  update((s) => ({ ...s, content: { ...s.content, ...patch } }));
 }

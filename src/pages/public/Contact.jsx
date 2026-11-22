@@ -5,8 +5,7 @@ import { Button } from '../../components/common/Button';
 import Field from '../../components/common/Field';
 import { fieldClass } from '../../lib/forms';
 import PageHero from '../../components/common/PageHero';
-import { contact } from '../../data/site';
-import { addMessage, makeRef } from '../../lib/store';
+import { addMessage, makeRef, useStore } from '../../lib/store';
 
 const faqs = [
   { q: 'How do consultations work?', a: 'Choose a service, pick a time in your own time zone, pay online and receive a Zoom link by email.' },
@@ -19,6 +18,7 @@ const faqs = [
 
 export default function Contact() {
   const [params] = useSearchParams();
+  const { contact, socials } = useStore('content');
   const [form, setForm] = useState({ name: '', email: '', subject: params.get('subject') || '', message: '' });
   const [errors, setErrors] = useState({});
   const [sent, setSent] = useState(false);
@@ -55,7 +55,7 @@ export default function Contact() {
           <div className="flex flex-col gap-2 border-t border-hairline pt-5">
             <span className="text-caption text-ink-muted">Follow</span>
             <div className="flex flex-wrap gap-5 text-[18px]">
-              {contact.socials.map((s) => (
+              {socials.map((s) => (
                 <a key={s.label} href={s.href} className="text-burgundy hover:text-maroon">
                   {s.label}
                 </a>

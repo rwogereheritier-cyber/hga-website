@@ -117,7 +117,7 @@ export default function EventDetail() {
             <h1 className="font-display text-[40px] font-medium leading-[1.05] tracking-[-1px] md:text-display-l">{event.title}</h1>
             <p className="max-w-prose text-[17px] leading-[1.6] text-ink-muted md:text-lead">{event.summary}</p>
           </Reveal>
-          <ImagePlaceholder label={`${event.title} cover`} className="h-[300px] md:h-[440px]" />
+          <ImagePlaceholder label={`${event.title} cover`} src={event.cover} className="h-[300px] w-full md:h-[440px]" />
           <dl className="grid gap-x-10 text-small sm:grid-cols-2">
             {[
               ['Date', fmtLongDate(startMs)],

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { contact } from '../../data/site';
+import { useStore } from '../../lib/store';
 
 const columns = [
   {
@@ -29,6 +29,7 @@ const columns = [
 ];
 
 export default function Footer() {
+  const { socials } = useStore('content');
   return (
     <footer className="container-page pb-12 pt-14 text-caption text-ink-muted">
       <div className="flex flex-wrap justify-between gap-10">
@@ -48,7 +49,7 @@ export default function Footer() {
           ))}
           <div className="flex flex-col gap-2.5">
             <span className="font-medium text-charcoal">Follow</span>
-            {contact.socials.map((s) => (
+            {socials.map((s) => (
               <a key={s.label} href={s.href} className="hover:text-burgundy">
                 {s.label}
               </a>

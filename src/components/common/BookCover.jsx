@@ -1,5 +1,9 @@
 /** CSS book cover placeholder until the real cover artwork arrives. */
-export default function BookCover({ title, author, size = 'md' }) {
+export default function BookCover({ title, author, size = 'md', src }) {
+  if (src) {
+    const box = size === 'lg' ? 'h-[360px] w-[260px]' : 'h-[240px] w-[176px]';
+    return <img src={src} alt={`Cover of ${title}`} className={`${box} shrink-0 rounded-[4px_10px_10px_4px] object-cover shadow-overlay`} />;
+  }
   const dims = size === 'lg' ? 'h-[360px] w-[260px] p-7' : 'h-[240px] w-[176px] p-5';
   const text = size === 'lg' ? 'text-[26px]' : 'text-[18px]';
   return (

@@ -2,7 +2,7 @@ import { Button, LinkAction } from '../../components/common/Button';
 import ImagePlaceholder from '../../components/common/ImagePlaceholder';
 import PageHero from '../../components/common/PageHero';
 import Reveal from '../../components/common/Reveal';
-import { stats } from '../../data/site';
+import { useStore } from '../../lib/store';
 
 const values = [
   ['Excellence', 'High standards in every session, resource and conversation.'],
@@ -14,6 +14,7 @@ const values = [
 ];
 
 export default function About() {
+  const { stats, about, founder } = useStore('content');
   return (
     <>
       <PageHero eyebrow="About us" title="Education that opens doors." lead="Hetty Global Academy supports nurses and healthcare professionals through education, mentorship and English language development." />
@@ -27,14 +28,9 @@ export default function About() {
           <h2 className="title-section">Our story.</h2>
         </Reveal>
         <Reveal delay={0.06} className="flex flex-col gap-6 text-[18px] leading-[1.75]">
-          <p>
-            HGA began with a simple observation: talented nurses trained abroad often lose months, sometimes years, to unclear
-            exam routes, language requirements and career decisions made without guidance.
-          </p>
-          <p>
-            As a Registered Nurse in Canada, Hetty started sharing what she had learned with a growing online community. Those
-            conversations became consultations, workshops and resources, and then an academy.
-          </p>
+          {about.story.split(/\n\s*\n/).map((para) => (
+            <p key={para.slice(0, 24)}>{para}</p>
+          ))}
           <p className="text-caption text-ink-muted">Placeholder story, to be replaced with Hetty’s own words.</p>
         </Reveal>
       </section>
@@ -76,8 +72,7 @@ export default function About() {
           <span className="eyebrow">Meet the founder</span>
           <h2 className="title-section">Hetty, Registered Nurse and educator.</h2>
           <p className="text-[18px] leading-[1.7] text-ink-muted">
-            Hetty is a Registered Nurse in Canada with a passion for education and mentorship. She founded HGA to give aspiring and
-            internationally educated nurses the clear, honest guidance she wished she had.
+            {founder.bio}
           </p>
           <p className="text-caption text-ink-muted">Credentials and biography to be confirmed with Hetty.</p>
         </Reveal>

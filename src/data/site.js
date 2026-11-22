@@ -1,24 +1,5 @@
 // Demo content. Items marked TODO must be confirmed by the client before launch.
 
-export const contact = {
-  email: 'hello@hettyglobalacademy.com', // TODO: confirm
-  phone: '[+1 000 000 0000]', // TODO: confirm
-  location: 'Ontario, Canada', // TODO: confirm city
-  socials: [
-    { label: 'TikTok', href: '#' }, // TODO: profile URL
-    { label: 'Instagram', href: '#' },
-    { label: 'LinkedIn', href: '#' },
-  ],
-};
-
-// TODO: verify every figure with the client.
-export const stats = [
-  { value: '45K+', label: 'Learning community' },
-  { value: '10+', label: 'Years of experience' },
-  { value: '500+', label: 'Learners supported' },
-  { value: '3', label: 'Learning paths' },
-];
-
 export const programmes = [
   {
     slug: 'nursing-education',

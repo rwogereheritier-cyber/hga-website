@@ -17,7 +17,8 @@ src/
   components/common       Button, LinkAction, Reveal (motion), ImagePlaceholder
   components/navigation   Header (sticky, mobile menu), Footer
   layouts                 PublicLayout (later: AdminLayout)
-  pages/public            Home, ComingSoon (temporary for unbuilt routes)
+  pages/public            All public pages
+  admin                   Admin dashboard (lazy-loaded): layout, screens, ui kit, metrics
   data/site.js            Demo content — every TODO needs client confirmation
   data/services.js        Consultations, prices and programme content
   features/booking        Booking flow and calendar
@@ -42,6 +43,19 @@ Follow the HGA design system: white page, burgundy as the single accent, gold on
 - [x] Resources (articles, search, filters, article page, share, related)
 - [x] Books (detail, format choice, demo purchase, placeholder download) and resource library
 - [x] About, Corporate responsibility, Contact (validated form + FAQ)
-- [ ] Admin dashboard (demo login)
+- [x] Admin dashboard at /admin (demo login: admin@hettyglobalacademy.com / Admin123!)
+  - Overview with revenue and booking charts (chart or table view)
+  - Bookings (search, date, service and status filters, status updates, cancel with refund, mark completed)
+  - Clients (search, profiles), Payments (filters, totals, CSV export), Messages (from the contact form)
+  - Events, Blog, Books and Resources with create / edit / delete
+  - Newsletter subscribers with CSV export; Website content (hero, prices, stats, founder, story, contact, socials)
+  - Settings with demo data reset
+
+## Demo data and limits
+
+Everything is stored in the browser's localStorage (`hga.store.v2`). Public actions (bookings, registrations, orders,
+messages, sign-ups) show up in the admin, and admin edits show up on the public site, but only in the same browser.
+The admin sign-in is a demo with no real security. Payments, emails and Zoom links are simulated. A backend
+(database, auth, Stripe, Zoom, email) replaces `src/lib/store.js` and `src/admin/auth.js` when the project goes live.
 
 NCLEX® and CELPIP® are trademarks of their owners; HGA is not affiliated.

@@ -2,12 +2,12 @@ import { Link } from 'react-router-dom';
 import BookCover from '../../components/common/BookCover';
 import PageHero from '../../components/common/PageHero';
 import Reveal from '../../components/common/Reveal';
-import { libraryResources } from '../../data/content';
 import { money } from '../../lib/format';
 import { useStore } from '../../lib/store';
 
 export default function Books() {
   const books = useStore('books');
+  const libraryResources = useStore('library');
   return (
     <>
       <PageHero eyebrow="Books & publications" title="Learn at your own pace." lead="Hetty’s publications and a growing library of practical resources." />
@@ -18,7 +18,7 @@ export default function Books() {
           .map((b, i) => (
             <Reveal key={b.slug} delay={i * 0.06}>
               <div className="flex h-full flex-col items-center gap-8 rounded-lg bg-grey-100 p-10 text-center md:p-14">
-                <BookCover title={b.title} author={b.author} />
+                <BookCover title={b.title} author={b.author} src={b.cover} />
                 <div className="flex flex-col items-center gap-3">
                   <h2 className="font-display text-[30px] leading-[1.15]">{b.title}</h2>
                   <span className="text-small text-ink-muted">
@@ -51,13 +51,19 @@ export default function Books() {
         <h2 className="title-section mb-4">Resource library.</h2>
         <p className="mb-10 text-[17px] text-ink-muted">Free downloadable tools for learners. The first ones are being prepared.</p>
         <ul className="border-b border-hairline">
-          {libraryResources.map((r) => (
+          {libraryResources.filter((r) => r.status !== 'Hidden').map((r) => (
             <li key={r.title} className="flex flex-wrap items-center justify-between gap-4 border-t border-hairline py-6">
               <span className="flex flex-col gap-1">
                 <span className="text-[18px] font-medium">{r.title}</span>
                 <span className="text-caption text-ink-muted">{r.type}</span>
               </span>
-              <span className="rounded-full bg-grey-100 px-3 py-1 text-caption text-ink-muted">{r.status}</span>
+              {r.status === 'Available' && r.link ? (
+                <a href={r.link} target="_blank" rel="noreferrer" className="text-[15px] font-medium text-burgundy hover:text-maroon">
+                  Download ›
+                </a>
+              ) : (
+                <span className="rounded-full bg-grey-100 px-3 py-1 text-caption text-ink-muted">{r.status}</span>
+              )}
             </li>
           ))}
         </ul>

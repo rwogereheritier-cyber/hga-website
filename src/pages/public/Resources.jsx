@@ -5,14 +5,13 @@ import ImagePlaceholder from '../../components/common/ImagePlaceholder';
 import PageHero from '../../components/common/PageHero';
 import Reveal from '../../components/common/Reveal';
 import { SearchBox, Segmented } from '../../components/common/Filters';
-import { articleCategories } from '../../data/content';
 import { useStore } from '../../lib/store';
 import { fmtArticleDate } from '../../lib/format';
 
 export function ArticleCard({ a }) {
   return (
     <Link to={`/resources/${a.slug}`} className="group flex flex-col gap-4">
-      <ImagePlaceholder label={a.category} className="h-[220px] transition duration-200 ease-out group-hover:shadow-hover" />
+      <ImagePlaceholder label={a.category} src={a.cover} className="h-[220px] w-full transition duration-200 ease-out group-hover:shadow-hover" />
       <span className="text-caption font-medium text-burgundy">{a.category}</span>
       <h3 className="font-display text-[24px] leading-[1.2] tracking-[-0.3px] transition-colors group-hover:text-burgundy">{a.title}</h3>
       <p className="text-small text-ink-muted">{a.excerpt}</p>
@@ -25,6 +24,7 @@ export function ArticleCard({ a }) {
 
 export default function Resources() {
   const articles = useStore('articles');
+  const articleCategories = useStore('categories');
   const [cat, setCat] = useState('All');
   const [q, setQ] = useState('');
   const published = useMemo(
@@ -48,7 +48,7 @@ export default function Resources() {
         <section className="container-page pb-section-sm md:pb-section">
           <Reveal>
             <Link to={`/resources/${featured.slug}`} className="group grid items-center gap-10 md:grid-cols-2 md:gap-16">
-              <ImagePlaceholder label={featured.category} className="h-[300px] md:h-[440px]" />
+              <ImagePlaceholder label={featured.category} src={featured.cover} className="h-[300px] w-full md:h-[440px]" />
               <span className="flex flex-col gap-5">
                 <span className="text-caption font-medium text-burgundy">Featured · {featured.category}</span>
                 <span className="font-display text-[36px] leading-[1.1] tracking-[-0.5px] transition-colors group-hover:text-burgundy md:text-heading-1">

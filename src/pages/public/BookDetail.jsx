@@ -61,6 +61,10 @@ function Purchase({ book, onClose }) {
         </p>
         {physical ? (
           <p className="text-small">Your paperback will be posted to the address you gave.</p>
+        ) : book.fileUrl ? (
+          <a href={book.fileUrl} target="_blank" rel="noreferrer" className="self-start rounded-full bg-burgundy px-7 py-[14px] text-[16px] font-medium text-white hover:bg-maroon">
+            Download {format}
+          </a>
         ) : (
           <Button onClick={downloadSample} className="self-start">
             Download {format}
@@ -122,7 +126,7 @@ export default function BookDetail() {
       </Link>
       <div className="mt-12 flex flex-wrap items-start gap-16 lg:gap-24">
         <div className="flex flex-[1_1_300px] justify-center rounded-lg bg-grey-100 py-16">
-          <BookCover title={book.title} author={book.author} size="lg" />
+          <BookCover title={book.title} author={book.author} size="lg" src={book.cover} />
         </div>
         <div className="flex min-w-0 flex-[1_1_420px] flex-col gap-6">
           <AnimatePresence mode="wait">

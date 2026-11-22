@@ -6,7 +6,7 @@ import CardFields from '../../components/common/CardFields';
 import { emptyCard, last4, validateCard } from '../../lib/forms';
 import Field from '../../components/common/Field';
 import { fieldClass } from '../../lib/forms';
-import { consultations, countries, getConsultation } from '../../data/services';
+import { countries } from '../../data/services';
 import { currency } from '../../data/site';
 import { addBooking, getState, makeRef, useStore } from '../../lib/store';
 import { buildSlots, fmtDate, fmtLongDate, fmtTime, icsStamp, visitorZoneLabel } from '../../lib/time';
@@ -57,8 +57,7 @@ function download(name, text, type) {
   URL.revokeObjectURL(url);
 }
 
-function Confirmation({ booking }) {
-  const service = getConsultation(booking.serviceId);
+function Confirmation({ booking, service }) {
   const end = booking.start + service.duration * 60000;
 
   const ics = [
@@ -132,6 +131,8 @@ function Confirmation({ booking }) {
 
 export default function BookingPage() {
   const [params] = useSearchParams();
+  const consultations = useStore('consultations');
+  const getConsultation = (id) => consultations.find((c) => c.id === id);
   const initial = getConsultation(params.get('service'));
   const bookings = useStore('bookings');
   const reduce = useReducedMotion();
@@ -148,7 +149,7 @@ export default function BookingPage() {
   const [done, setDone] = useState(null);
 
   const service = getConsultation(serviceId);
-  const slots = useMemo(() => buildSlots(bookings.map((b) => b.start)), [bookings]);
+  const slots = useMemo(() => buildSlots(bookings.filter((b) => b.status !== 'Cancelled').map((b) => b.start)), [bookings]);
   const available = useMemo(
     () => new Set(Object.entries(slots).filter(([, list]) => list.some((s) => !s.taken)).map(([k]) => k)),
     [slots],
@@ -184,7 +185,7 @@ export default function BookingPage() {
     const cardErrors = validateCard(card);
     setErrors(cardErrors);
     if (Object.keys(cardErrors).length) return;
-    if (getState().bookings.some((b) => b.start === slot)) {
+    if (getState().bookings.some((b) => b.start === slot && b.status !== 'Cancelled')) {
       go(1);
       setSlot(null);
       setErrors({ form: 'Sorry, that time was just taken. Please choose another.' });
@@ -266,7 +267,7 @@ export default function BookingPage() {
               <h2 ref={headingRef} tabIndex={-1} className="sr-only">
                 Booking confirmed
               </h2>
-              <Confirmation booking={done} />
+              <Confirmation booking={done} service={getConsultation(done.serviceId)} />
             </motion.div>
           ) : (
             <motion.div key={step} {...fade} className="flex flex-wrap items-start gap-16 lg:gap-24">

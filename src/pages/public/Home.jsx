@@ -4,24 +4,25 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Button, LinkAction } from '../../components/common/Button';
 import ImagePlaceholder from '../../components/common/ImagePlaceholder';
 import Reveal from '../../components/common/Reveal';
-import { currency, faqs, programmes, stats, testimonial } from '../../data/site';
+import { faqs, programmes, testimonial } from '../../data/site';
 import { addSubscriber, useStore } from '../../lib/store';
-import { priceLabel } from '../../lib/format';
+import { money, priceLabel } from '../../lib/format';
 
 function Hero() {
+  const { hero } = useStore('content');
   return (
     <section className="container-page flex flex-col items-center gap-7 pb-24 pt-24 text-center md:pt-40">
       <Reveal as="span" className="eyebrow">
-        Nursing · Careers · English
+        {hero.eyebrow}
       </Reveal>
       <Reveal delay={0.05}>
         <h1 className="h-display max-w-[980px]">
-          Empowering minds. Elevating careers. <em className="text-burgundy">Transforming futures.</em>
+          {hero.title} <em className="text-burgundy">{hero.accent}</em>
         </h1>
       </Reveal>
       <Reveal delay={0.1}>
         <p className="max-w-prose text-[17px] leading-[1.55] text-ink-muted md:text-lead">
-          Nursing education, mentorship and English language support from a Registered Nurse in Canada.
+          {hero.lead}
         </p>
       </Reveal>
       <Reveal delay={0.15} className="flex flex-wrap items-center justify-center gap-7 pt-2">
@@ -33,6 +34,7 @@ function Hero() {
 }
 
 function Stats() {
+  const { stats } = useStore('content');
   return (
     <section className="container-page section grid grid-cols-2 gap-12 text-center md:grid-cols-4">
       {stats.map((s, i) => (
@@ -46,6 +48,8 @@ function Stats() {
 }
 
 function Paths() {
+  const list = useStore('consultations');
+  const from = (slug) => Math.min(...list.filter((c) => c.programme === slug).map((c) => c.price));
   return (
     <section className="container-page flex flex-col gap-16 pb-section-sm md:pb-section">
       <Reveal className="flex flex-col items-center gap-4 text-center">
@@ -64,8 +68,7 @@ function Paths() {
               <span className="text-caption font-medium text-burgundy">{p.category}</span>
               <h3 className="h-card">{p.title}</h3>
               <span className="text-small text-ink-muted">
-                From {currency}
-                {p.from}
+                From {money(from(p.slug))}
               </span>
               <span className="text-small font-medium text-burgundy">
                 Learn more <span aria-hidden="true">›</span>
@@ -80,6 +83,7 @@ function Paths() {
 }
 
 function Founder() {
+  const { founder } = useStore('content');
   return (
     <section className="bg-ivory">
       <div className="container-page section flex flex-wrap items-center gap-12 md:gap-24">
@@ -88,10 +92,9 @@ function Founder() {
         </Reveal>
         <Reveal delay={0.08} className="flex flex-1 basis-[420px] flex-col gap-7">
           <span className="eyebrow">Meet the founder</span>
-          <h2 className="title-section">“I built HGA for the nurse I once was.”</h2>
+          <h2 className="title-section">“{founder.quote}”</h2>
           <p className="max-w-[460px] text-[18px] leading-[1.7] text-ink-muted">
-            Hetty is a Registered Nurse in Canada. She helps aspiring and internationally educated nurses prepare for exams,
-            strengthen their English and build careers they are proud of.
+            {founder.bio}
           </p>
           <LinkAction to="/about">Discover our story</LinkAction>
         </Reveal>
@@ -164,7 +167,7 @@ function BookAndNewsletter() {
       <Reveal className="flex min-h-[460px] flex-col gap-4 rounded-lg bg-grey-100 p-8 md:p-14">
         <span className="text-caption font-medium text-burgundy">Publication</span>
         <h3 className="h-card">Your Nursing Career Success Guide</h3>
-        <span className="text-small text-ink-muted">By Hetty · {currency}24.99</span>
+        <span className="text-small text-ink-muted">By Hetty · {money(24.99)}</span>
         <LinkAction to="/books">Explore</LinkAction>
         <div className="mt-auto flex h-[200px] w-[150px] items-end self-center rounded-[4px_8px_8px_4px] bg-burgundy p-[18px]">
           <span className="font-display text-[16px] leading-[1.2] text-white">Your Nursing Career Success Guide</span>

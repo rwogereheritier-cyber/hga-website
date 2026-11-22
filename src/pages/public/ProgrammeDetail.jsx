@@ -4,8 +4,9 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Button } from '../../components/common/Button';
 import ImagePlaceholder from '../../components/common/ImagePlaceholder';
 import Reveal from '../../components/common/Reveal';
-import { getConsultation, getProgramme } from '../../data/services';
-import { currency } from '../../data/site';
+import { getProgramme } from '../../data/services';
+import { money } from '../../lib/format';
+import { useStore } from '../../lib/store';
 import ComingSoon from './ComingSoon';
 
 const steps = [
@@ -18,8 +19,9 @@ export default function ProgrammeDetail() {
   const { slug } = useParams();
   const p = getProgramme(slug);
   const [open, setOpen] = useState(-1);
+  const consultations = useStore('consultations');
   if (!p) return <ComingSoon title="Programme not found" />;
-  const sessions = p.consultations.map(getConsultation);
+  const sessions = p.consultations.map((id) => consultations.find((c) => c.id === id)).filter(Boolean);
 
   return (
     <>
@@ -28,8 +30,7 @@ export default function ProgrammeDetail() {
           <span className="text-[16px] font-medium">{p.category}</span>
           <span className="flex items-center gap-4 text-[14px]">
             <span className="hidden text-ink-muted sm:inline">
-              From {currency}
-              {Math.min(...sessions.map((s) => s.price))}
+              From {money(Math.min(...sessions.map((s) => s.price)))}
             </span>
             <Button to={`/consultations?service=${sessions[0].id}`} size="sm">
               Book
@@ -107,8 +108,7 @@ export default function ProgrammeDetail() {
             >
               <span className="text-caption font-medium text-burgundy">{s.name}</span>
               <span className="font-display text-[52px] leading-none tracking-[-1px]">
-                {currency}
-                {s.price}
+                {money(s.price)}
               </span>
               <span className="text-small text-ink-muted">{s.duration} minutes · Zoom</span>
               <p className="pt-1 text-[16px] leading-[1.65]">{s.summary}</p>

@@ -2,20 +2,25 @@ import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { LinkAction } from '../../components/common/Button';
 import Reveal from '../../components/common/Reveal';
-import { consultations, programmeDetails } from '../../data/services';
-import { currency } from '../../data/site';
+import { programmeDetails } from '../../data/services';
+import { money } from '../../lib/format';
+import { useStore } from '../../lib/store';
 
 const filters = ['All', ...programmeDetails.map((p) => p.filter)];
 
-const catalogue = programmeDetails.flatMap((p) =>
-  p.services.map((s) => ({
-    ...s,
-    programme: p,
-    from: Math.min(...p.consultations.map((id) => consultations.find((c) => c.id === id).price)),
-  })),
-);
-
 export default function Programmes() {
+  const consultations = useStore('consultations');
+  const catalogue = useMemo(
+    () =>
+      programmeDetails.flatMap((p) =>
+        p.services.map((s) => ({
+          ...s,
+          programme: p,
+          from: Math.min(...p.consultations.map((id) => consultations.find((c) => c.id === id)?.price ?? Infinity)),
+        })),
+      ),
+    [consultations],
+  );
   const [filter, setFilter] = useState('All');
   const [query, setQuery] = useState('');
 
@@ -26,7 +31,7 @@ export default function Programmes() {
         (filter === 'All' || s.programme.filter === filter) &&
         (!q || `${s.name} ${s.text} ${s.programme.category}`.toLowerCase().includes(q)),
     );
-  }, [filter, query]);
+  }, [filter, query, catalogue]);
 
   return (
     <>
@@ -112,8 +117,7 @@ export default function Programmes() {
                   <span className="text-small text-ink-muted">{s.text}</span>
                 </span>
                 <span className="text-small text-ink-muted">
-                  From {currency}
-                  {s.from}
+                  From {money(s.from)}
                 </span>
                 <LinkAction to={`/programmes/${s.programme.slug}`}>Details</LinkAction>
               </li>

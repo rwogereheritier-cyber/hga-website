@@ -66,7 +66,7 @@ export default function Article() {
       </header>
 
       <div className="container-page">
-        <ImagePlaceholder label={`${a.category} article image`} className="h-[300px] md:h-[520px]" />
+        <ImagePlaceholder label={`${a.category} article image`} src={a.cover} className="h-[300px] w-full md:h-[520px]" />
       </div>
 
       <div className="mx-auto flex max-w-[680px] flex-col gap-6 px-6 py-section-sm md:px-8 md:py-24">
