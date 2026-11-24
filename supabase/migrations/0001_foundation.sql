@@ -60,6 +60,22 @@ drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created after insert on auth.users
   for each row execute function public.handle_new_user();
 
+-- Accounts made before this script ran get a profile too (oldest first, so the first becomes owner).
+do $$
+declare u record;
+begin
+  for u in select * from auth.users au
+           where not exists (select 1 from public.profiles p where p.id = au.id)
+           order by au.created_at
+  loop
+    insert into public.profiles (id, email, full_name, role, status)
+    values (u.id, u.email, coalesce(u.raw_user_meta_data ->> 'full_name', ''),
+            case when exists (select 1 from public.profiles where role = 'owner') then 'viewer'::public.app_role else 'owner'::public.app_role end,
+            case when u.email_confirmed_at is null then 'invited' else 'active' end)
+    on conflict (id) do nothing;
+  end loop;
+end $$;
+
 -- Invited person accepts → mark them active.
 create or replace function public.handle_user_confirmed()
 returns trigger

@@ -75,7 +75,16 @@ export default function AdminLayout() {
 
   if (loading) return <div className="p-10 text-[14px] text-ink-muted">Loading your dashboard…</div>;
   if (!user) return <Navigate to="/admin/login" replace state={{ from: pathname }} />;
-  if (!profile || profile.status === 'disabled') {
+  if (!profile) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center">
+        <h1 className="font-display text-[30px]">Your account isn’t set up yet.</h1>
+        <p className="max-w-[440px] text-ink-muted">You signed in, but there’s no dashboard profile for this email. If you’re setting up the site, run the database script in Supabase, then sign in again.</p>
+        <button type="button" onClick={() => signOut()} className="font-medium text-burgundy">Sign out</button>
+      </div>
+    );
+  }
+  if (profile.status === 'disabled') {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center">
         <h1 className="font-display text-[30px]">Your access is paused.</h1>
