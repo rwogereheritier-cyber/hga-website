@@ -6,8 +6,11 @@ import { fieldClass } from '../lib/forms';
 import { removeItem, upsertItem, useStore } from '../lib/store';
 import { toast } from '../lib/toast';
 import { fmtDateTime } from './metrics';
-import { AdminHeader, Btn, ImageUpload, Modal, Status, Table, Tabs } from './ui';
+import { AdminHeader, Btn, Modal, Status, Table, Tabs } from './ui';
 import { td } from './styles';
+import { useSession } from './auth';
+import { canEdit } from './permissions';
+import { PhotoField } from './PhotoPicker';
 
 const pad = (n) => String(n).padStart(2, '0');
 const toLocalInput = (iso) => {
@@ -96,7 +99,7 @@ function EventForm({ initial, onClose }) {
           <textarea rows={4} value={f.description} onChange={set('description')} className={`${fieldClass()} h-auto py-3`} />
         </Field>
         <div className="sm:col-span-2">
-          <ImageUpload value={f.cover} onChange={(cover) => setF({ ...f, cover })} />
+          <PhotoField value={f.cover} onChange={(cover) => setF({ ...f, cover })} />
         </div>
       </div>
     </Modal>
@@ -106,6 +109,8 @@ function EventForm({ initial, onClose }) {
 export default function EventsAdmin() {
   const events = useStore('events');
   const registrations = useStore('registrations');
+  const { profile } = useSession();
+  const editable = canEdit(profile.role, 'events');
   const [tab, setTab] = useState('Upcoming');
   const [editing, setEditing] = useState(null);
   const [viewing, setViewing] = useState(null);
@@ -119,9 +124,11 @@ export default function EventsAdmin() {
   return (
     <div className="flex flex-col gap-8">
       <AdminHeader title="Events & workshops" sub={`${events.length} events`}>
-        <Btn variant="primary" onClick={() => setEditing({})}>
-          New event
-        </Btn>
+        {editable && (
+          <Btn variant="primary" onClick={() => setEditing({})}>
+            New event
+          </Btn>
+        )}
       </AdminHeader>
       <Tabs options={['Upcoming', 'Past']} value={tab} onChange={setTab} label="Upcoming or past" />
       <Table columns={[{ key: 't', label: 'Event' }, { key: 'd', label: 'Date' }, { key: 'p', label: 'Price' }, { key: 'r', label: 'Registered' }, { key: 'x', label: '' }]} empty={list.length ? null : `No ${tab.toLowerCase()} events.`}>
@@ -143,12 +150,16 @@ export default function EventsAdmin() {
               <button type="button" onClick={() => setViewing(e)} className="mr-4 font-medium text-burgundy">
                 Registrations
               </button>
-              <button type="button" onClick={() => setEditing(e)} className="mr-4 font-medium text-burgundy">
-                Edit
-              </button>
-              <button type="button" onClick={() => setDeleting(e)} className="font-medium text-danger">
-                Delete
-              </button>
+              {editable && (
+                <>
+                  <button type="button" onClick={() => setEditing(e)} className="mr-4 font-medium text-burgundy">
+                    Edit
+                  </button>
+                  <button type="button" onClick={() => setDeleting(e)} className="font-medium text-danger">
+                    Delete
+                  </button>
+                </>
+              )}
             </td>
           </tr>
         ))}

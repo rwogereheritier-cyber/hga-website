@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import Field from '../components/common/Field';
 import { fieldClass } from '../lib/forms';
-import { setContent, update, useStore } from '../lib/store';
+import { saveContent, savePrices, saveSetting } from '../lib/live';
+import { useStore } from '../lib/store';
 import { toast } from '../lib/toast';
 import { AdminHeader, Btn } from './ui';
 
@@ -33,13 +34,32 @@ export default function Content() {
   const [socials, setSocials] = useState(content.socials);
   const [prices, setPrices] = useState(consultations);
 
-  const saved = (what) => toast(`${what} updated on the website`);
+  async function persist(patch, what) {
+    try {
+      await saveContent(patch);
+      await saveSetting('contentReviewed', true);
+      toast(`${what} updated on the website`);
+    } catch (e) {
+      toast(e.message, 'error');
+    }
+  }
+
+  async function persistPrices() {
+    if (prices.some((p) => !(+p.price >= 0) || +p.duration < 15 || !p.name.trim())) return toast('Check the prices: each needs a name, a price and at least 15 minutes', 'error');
+    try {
+      await savePrices(prices.map((p) => ({ ...p, price: +p.price, duration: +p.duration })));
+      await saveSetting('contentReviewed', true);
+      toast('Prices updated on the website');
+    } catch (e) {
+      toast(e.message, 'error');
+    }
+  }
 
   return (
     <div className="flex max-w-[900px] flex-col gap-10">
       <AdminHeader title="Website content" sub="Changes appear on the public website straight away (in this browser)" />
 
-      <Section title="Homepage hero" onSave={() => { setContent({ hero }); saved('Homepage hero'); }}>
+      <Section title="Homepage hero" onSave={() => persist({ hero }, 'Homepage hero')}>
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Eyebrow">
             <input value={hero.eyebrow} onChange={(e) => setHero({ ...hero, eyebrow: e.target.value })} className={fieldClass()} />
@@ -56,7 +76,7 @@ export default function Content() {
         </div>
       </Section>
 
-      <Section title="Consultation prices" note="Used by the booking flow and programme pages. Currency still to confirm." onSave={() => { update((s) => ({ ...s, consultations: prices.map((p) => ({ ...p, price: +p.price, duration: +p.duration })) })); saved('Prices'); }}>
+      <Section title="Consultation prices" note="Used by the booking flow and programme pages. Currency is set in Settings." onSave={persistPrices}>
         <div className="flex flex-col gap-3">
           {prices.map((p, i) => (
             <div key={p.id} className="grid items-end gap-3 sm:grid-cols-[2fr_1fr_1fr]">
@@ -74,7 +94,7 @@ export default function Content() {
         </div>
       </Section>
 
-      <Section title="Statistics" note="Shown on the homepage and About page." onSave={() => { setContent({ stats }); saved('Statistics'); }}>
+      <Section title="Statistics" note="Shown on the homepage and About page." onSave={() => persist({ stats }, 'Statistics')}>
         <div className="grid gap-3 sm:grid-cols-2">
           {stats.map((s, i) => (
             <div key={i} className="grid grid-cols-[1fr_2fr] gap-3">
@@ -89,7 +109,7 @@ export default function Content() {
         </div>
       </Section>
 
-      <Section title="Founder profile" onSave={() => { setContent({ founder }); saved('Founder profile'); }}>
+      <Section title="Founder profile" onSave={() => persist({ founder }, 'Founder profile')}>
         <Field label="Quote">
           <input value={founder.quote} onChange={(e) => setFounder({ ...founder, quote: e.target.value })} className={fieldClass()} />
         </Field>
@@ -98,13 +118,13 @@ export default function Content() {
         </Field>
       </Section>
 
-      <Section title="About: our story" onSave={() => { setContent({ about }); saved('Our story'); }}>
+      <Section title="About: our story" onSave={() => persist({ about }, 'Our story')}>
         <Field label="Story" hint="Separate paragraphs with a blank line.">
           <textarea rows={7} value={about.story} onChange={(e) => setAbout({ ...about, story: e.target.value })} className={`${fieldClass()} h-auto py-3`} />
         </Field>
       </Section>
 
-      <Section title="Contact information" onSave={() => { setContent({ contact }); saved('Contact information'); }}>
+      <Section title="Contact information" onSave={() => persist({ contact }, 'Contact information')}>
         <div className="grid gap-4 sm:grid-cols-3">
           <Field label="Email">
             <input value={contact.email} onChange={(e) => setContact({ ...contact, email: e.target.value })} className={fieldClass()} />
@@ -118,7 +138,7 @@ export default function Content() {
         </div>
       </Section>
 
-      <Section title="Social media links" onSave={() => { setContent({ socials }); saved('Social links'); }}>
+      <Section title="Social media links" onSave={() => persist({ socials }, 'Social links')}>
         <div className="grid gap-4 sm:grid-cols-3">
           {socials.map((s, i) => (
             <Field key={s.label} label={s.label}>

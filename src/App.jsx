@@ -30,6 +30,11 @@ const ResourcesAdmin = lazy(() => import('./admin/ResourcesAdmin'));
 const Subscribers = lazy(() => import('./admin/Subscribers'));
 const Content = lazy(() => import('./admin/Content'));
 const Settings = lazy(() => import('./admin/Settings'));
+const Team = lazy(() => import('./admin/Team'));
+const Media = lazy(() => import('./admin/Media'));
+const Connections = lazy(() => import('./admin/Connections'));
+const Help = lazy(() => import('./admin/Help'));
+const Welcome = lazy(() => import('./admin/Welcome'));
 
 const loading = <div className="p-10 text-[14px] text-ink-muted">Loading…</div>;
 
@@ -53,6 +58,7 @@ export default function App() {
       </Route>
       <Route path="/consultations" element={<BookingPage />} />
       <Route path="/admin/login" element={<Suspense fallback={loading}><Login /></Suspense>} />
+      <Route path="/admin/welcome" element={<Suspense fallback={loading}><Welcome /></Suspense>} />
       <Route path="/admin" element={<Suspense fallback={loading}><AdminLayout /></Suspense>}>
         <Route index element={<Suspense fallback={loading}><Overview /></Suspense>} />
         <Route path="bookings" element={<Suspense fallback={loading}><Bookings /></Suspense>} />
@@ -66,6 +72,10 @@ export default function App() {
         <Route path="subscribers" element={<Suspense fallback={loading}><Subscribers /></Suspense>} />
         <Route path="content" element={<Suspense fallback={loading}><Content /></Suspense>} />
         <Route path="settings" element={<Suspense fallback={loading}><Settings /></Suspense>} />
+        <Route path="team" element={<Suspense fallback={loading}><Team /></Suspense>} />
+        <Route path="media" element={<Suspense fallback={loading}><Media /></Suspense>} />
+        <Route path="connections" element={<Suspense fallback={loading}><Connections /></Suspense>} />
+        <Route path="help" element={<Suspense fallback={loading}><Help /></Suspense>} />
         <Route path="*" element={<ComingSoon title="Page not found" />} />
       </Route>
     </Routes>

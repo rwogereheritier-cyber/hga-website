@@ -1,15 +1,16 @@
 // Availability is defined in Hetty's time zone and shown in the visitor's own.
 // TODO: confirm Hetty's city, working hours and holidays with the client.
 export const HOST_TZ = 'America/Toronto';
-const HOST_SLOTS = [
-  [9, 0],
-  [10, 30],
-  [12, 0],
-  [14, 0],
-  [15, 30],
-];
 const HOLIDAYS = ['2026-12-24', '2026-12-25', '2026-12-26', '2026-12-31', '2027-01-01'];
-const DAYS_AHEAD = 60;
+const DEFAULT_AVAILABILITY = { days: [1, 2, 3, 4, 5], start: '09:00', end: '17:00', slotMinutes: 90, minNoticeHours: 24, maxAdvanceDays: 60 };
+
+/** Start times (hour, minute) for one day, from the booking hours in Settings. */
+function dayStarts({ start, end, slotMinutes }, sessionMinutes = 45) {
+  const toMin = (t) => +t.slice(0, 2) * 60 + +t.slice(3, 5);
+  const out = [];
+  for (let m = toMin(start); m + sessionMinutes <= toMin(end); m += slotMinutes) out.push([Math.floor(m / 60), m % 60]);
+  return out;
+}
 
 const pad = (n) => String(n).padStart(2, '0');
 
@@ -45,18 +46,22 @@ export function zonedToUtc(y, m, d, h, min, tz) {
 export const localKey = (date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 
 /** All bookable slots for the next weeks, grouped by the visitor's local date. */
-export function buildSlots(takenMs = []) {
+export function buildSlots(takenMs = [], availability = DEFAULT_AVAILABILITY, tz = HOST_TZ, sessionMinutes = 45) {
+  const av = { ...DEFAULT_AVAILABILITY, ...availability };
   const now = Date.now();
-  const today = partsIn(now, HOST_TZ);
+  const earliest = now + av.minNoticeHours * 3600000;
+  const today = partsIn(now, tz);
   const taken = new Set(takenMs);
+  const starts = dayStarts(av, sessionMinutes);
   const byDay = {};
-  for (let i = 1; i <= DAYS_AHEAD; i++) {
+  for (let i = 0; i <= av.maxAdvanceDays; i++) {
     const day = new Date(Date.UTC(+today.year, +today.month - 1, +today.day + i));
     const dow = day.getUTCDay();
     const hostKey = `${day.getUTCFullYear()}-${pad(day.getUTCMonth() + 1)}-${pad(day.getUTCDate())}`;
-    if (dow === 0 || dow === 6 || HOLIDAYS.includes(hostKey)) continue;
-    for (const [h, min] of HOST_SLOTS) {
-      const ms = zonedToUtc(day.getUTCFullYear(), day.getUTCMonth(), day.getUTCDate(), h, min, HOST_TZ);
+    if (!av.days.includes(dow) || HOLIDAYS.includes(hostKey)) continue;
+    for (const [h, min] of starts) {
+      const ms = zonedToUtc(day.getUTCFullYear(), day.getUTCMonth(), day.getUTCDate(), h, min, tz);
+      if (ms < earliest) continue;
       // Demo: about one slot in five already taken, plus anything booked in this browser.
       const demoTaken = Math.floor(ms / 1800000) % 5 === 0;
       const key = localKey(new Date(ms));

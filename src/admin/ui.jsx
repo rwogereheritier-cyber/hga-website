@@ -29,6 +29,11 @@ const dot = {
   Published: 'bg-success',
   Available: 'bg-success',
   Registered: 'bg-success',
+  Active: 'bg-success',
+  Connected: 'bg-success',
+  Invited: 'bg-gold',
+  'Not connected': 'bg-[#9A9499]',
+  Paused: 'bg-[#9A9499]',
   Delivered: 'bg-success',
   Pending: 'bg-gold',
   Draft: 'bg-gold',
@@ -177,40 +182,5 @@ export function Details({ rows }) {
         </div>
       ))}
     </dl>
-  );
-}
-
-/** Simulated image upload: shows a preview and stores a small data URL. */
-export function ImageUpload({ value, onChange, label = 'Cover image' }) {
-  function pick(e) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (file.size > 400_000) {
-      onChange(URL.createObjectURL(file));
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = () => onChange(String(reader.result));
-    reader.readAsDataURL(file);
-  }
-  return (
-    <div className="flex flex-col gap-2 text-caption text-ink-muted">
-      <span>{label}</span>
-      <div className="flex items-center gap-4">
-        <div className="flex h-20 w-32 items-center justify-center overflow-hidden rounded-md bg-grey-100 text-[12px]">
-          {value ? <img src={value} alt="Selected cover preview" className="h-full w-full object-cover" /> : 'No image'}
-        </div>
-        <label className="cursor-pointer rounded-full border border-[#E2DED8] px-4 py-2 text-[13px] font-medium text-charcoal hover:border-charcoal">
-          Choose image
-          <input type="file" accept="image/*" onChange={pick} className="sr-only" />
-        </label>
-        {value && (
-          <button type="button" onClick={() => onChange('')} className="text-[13px] text-danger">
-            Remove
-          </button>
-        )}
-      </div>
-      <span>Demo: images stay in this browser. Large images last until the page reloads.</span>
-    </div>
   );
 }

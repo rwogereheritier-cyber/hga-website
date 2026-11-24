@@ -7,7 +7,7 @@ import { emptyCard, last4, validateCard } from '../../lib/forms';
 import Field from '../../components/common/Field';
 import { fieldClass } from '../../lib/forms';
 import { countries } from '../../data/services';
-import { currency } from '../../data/site';
+import { money } from '../../lib/format';
 import { addBooking, getState, makeRef, useStore } from '../../lib/store';
 import { buildSlots, fmtDate, fmtLongDate, fmtTime, icsStamp, visitorZoneLabel } from '../../lib/time';
 import Calendar from './Calendar';
@@ -32,7 +32,7 @@ function Summary({ service, slot, step, onNext, nextLabel, disabled, busy }) {
         ))}
         <div className="flex justify-between gap-3 border-y border-hairline py-5 text-[19px] font-medium">
           <dt>Total</dt>
-          <dd>{service ? `${currency}${service.price}` : '—'}</dd>
+          <dd>{service ? money(service.price) : '—'}</dd>
         </div>
       </dl>
       {onNext && (
@@ -41,8 +41,7 @@ function Summary({ service, slot, step, onNext, nextLabel, disabled, busy }) {
         </Button>
       )}
       <p className="text-caption leading-[1.6] text-ink-muted">
-        {step < 3 ? 'You won’t be charged until the last step. ' : ''}Free rescheduling up to 24 hours before. Prices in{' '}
-        {currency === '$' ? '[CURRENCY]' : currency}.
+        {step < 3 ? 'You won’t be charged until the last step. ' : ''}Free rescheduling up to 24 hours before. Prices in {getState().settings.business?.currency || 'CAD'}.
       </p>
     </aside>
   );
@@ -84,7 +83,7 @@ function Confirmation({ booking, service }) {
     `Service: ${service.name}`,
     `When: ${fmtLongDate(booking.start)}, ${fmtTime(booking.start)} (${visitorZoneLabel()})`,
     `Duration: ${service.duration} minutes`,
-    `Amount: ${currency}${booking.amount} — Paid (demo)`,
+    `Amount: ${money(booking.amount)} — Paid (demo)`,
     `Zoom: ${booking.zoom}`,
   ].join('\n');
 
@@ -104,7 +103,7 @@ function Confirmation({ booking, service }) {
           ['Reference', booking.ref],
           ['Service', service.name],
           ['When', `${fmtLongDate(booking.start)}, ${fmtTime(booking.start)}`],
-          ['Payment', `${currency}${booking.amount} · Paid`],
+          ['Payment', `${money(booking.amount)} · Paid`],
           ['Zoom link', booking.zoom],
         ].map(([k, v]) => (
           <div key={k} className="flex flex-wrap justify-between gap-3 border-t border-hairline py-4 last:border-b">
@@ -135,6 +134,7 @@ export default function BookingPage() {
   const getConsultation = (id) => consultations.find((c) => c.id === id);
   const initial = getConsultation(params.get('service'));
   const bookings = useStore('bookings');
+  const settings = useStore('settings');
   const reduce = useReducedMotion();
   const headingRef = useRef(null);
 
@@ -149,7 +149,12 @@ export default function BookingPage() {
   const [done, setDone] = useState(null);
 
   const service = getConsultation(serviceId);
-  const slots = useMemo(() => buildSlots(bookings.filter((b) => b.status !== 'Cancelled').map((b) => b.start)), [bookings]);
+  const slots = useMemo(() => buildSlots(
+        bookings.filter((b) => b.status !== 'Cancelled').map((b) => b.start),
+        settings.availability,
+        settings.business?.timezone,
+        service?.duration || 45,
+      ), [bookings, settings, service]);
   const available = useMemo(
     () => new Set(Object.entries(slots).filter(([, list]) => list.some((s) => !s.taken)).map(([k]) => k)),
     [slots],
@@ -234,7 +239,7 @@ export default function BookingPage() {
     { label: 'Continue', onNext: () => go(1), disabled: !service },
     { label: 'Continue', onNext: () => go(2), disabled: !slot },
     { label: 'Continue to payment', onNext: () => validateDetails() && go(3) },
-    { label: `Pay ${service ? currency + service.price : ''}`, onNext: pay },
+    { label: `Pay ${service ? money(service.price) : ''}`, onNext: pay },
   ][step];
 
   return (
@@ -308,8 +313,7 @@ export default function BookingPage() {
                         >
                           <span className="text-[17px] font-medium">{c.name}</span>
                           <span className="text-small text-ink-muted">
-                            {currency}
-                            {c.price} · {c.duration} min
+                            {money(c.price)} · {c.duration} min
                           </span>
                           <span className="pt-1 text-small text-ink-muted">{c.summary}</span>
                         </button>
@@ -427,7 +431,7 @@ export default function BookingPage() {
           <div className="container-page flex items-center justify-between gap-4 py-3">
             <span className="flex flex-col">
               <span className="text-caption text-ink-muted">{service ? service.name : 'Choose a service'}</span>
-              <span className="text-[17px] font-medium">{service ? `${currency}${service.price}` : '—'}</span>
+              <span className="text-[17px] font-medium">{service ? money(service.price) : '—'}</span>
             </span>
             <Button onClick={next.onNext} disabled={next.disabled || busy} className="disabled:cursor-not-allowed disabled:bg-[#F0EDE9] disabled:text-ink-muted">
               {busy ? 'Processing…' : next.label}

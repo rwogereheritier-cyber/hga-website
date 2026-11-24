@@ -48,4 +48,3 @@ export const faqs = [
   },
 ];
 
-export const currency = '$'; // TODO: CAD or USD

@@ -4,8 +4,9 @@ import { slugify } from '../lib/format';
 import { fieldClass } from '../lib/forms';
 import { removeItem, update, upsertItem, useStore } from '../lib/store';
 import { toast } from '../lib/toast';
-import { AdminHeader, Btn, ImageUpload, Modal, SearchInput, Status, Table, Tabs } from './ui';
+import { AdminHeader, Btn, Modal, SearchInput, Status, Table, Tabs } from './ui';
 import { td } from './styles';
+import { PhotoField } from './PhotoPicker';
 
 function Editor({ initial, categories, onClose }) {
   const isNew = !initial.slug;
@@ -105,7 +106,7 @@ function Editor({ initial, categories, onClose }) {
           <textarea rows={10} value={f.bodyText} onChange={set('bodyText')} className={`${fieldClass(errors.bodyText)} h-auto py-3 leading-[1.6]`} />
         </Field>
         <div className="sm:col-span-2">
-          <ImageUpload label="Featured image" value={f.cover} onChange={(cover) => setF({ ...f, cover })} />
+          <PhotoField label="Featured image" value={f.cover} onChange={(cover) => setF({ ...f, cover })} />
         </div>
       </div>
     </Modal>

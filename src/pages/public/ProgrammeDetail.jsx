@@ -52,7 +52,7 @@ export default function ProgrammeDetail() {
       </section>
 
       <div className="container-page">
-        <ImagePlaceholder label={p.photo} className="h-[360px] md:h-[560px]" />
+        <ImagePlaceholder slot={`programme.${p.slug}`} label={p.photo} className="h-[360px] w-full md:h-[560px]" />
       </div>
 
       <section className="container-page section grid gap-12 md:grid-cols-3 md:gap-16">

@@ -25,7 +25,7 @@ export default function Responsibility() {
       <PageHero eyebrow="Corporate responsibility" title="Creating opportunities through education." lead="Our commitment to making learning accessible and to strengthening the communities we serve." />
 
       <div className="container-page">
-        <ImagePlaceholder label="Community workshop" className="h-[360px] md:h-[560px]" />
+        <ImagePlaceholder slot="responsibility.hero" label="Community workshop" className="h-[360px] w-full md:h-[560px]" />
       </div>
 
       <section className="container-page section flex flex-col gap-14">

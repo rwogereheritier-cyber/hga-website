@@ -51,6 +51,17 @@ Follow the HGA design system: white page, burgundy as the single accent, gold on
   - Newsletter subscribers with CSV export; Website content (hero, prices, stats, founder, story, contact, socials)
   - Settings with demo data reset
 
+## Phase 1: backend foundation (Nov 2026)
+
+- [x] Supabase database script with roles and row-level security (`supabase/migrations`), tested on Postgres
+- [x] Real sign-in, invitations, password reset and welcome page (demo fallback until Supabase is connected)
+- [x] Team: invite, change role, pause, remove, transfer ownership (server function `api/team.js`)
+- [x] Roles: owner, admin, assistant, editor, viewer; menus and actions follow the role
+- [x] Photos: library, website photo spots, automatic resize/compress, alt text, focus point
+- [x] Setup checklist, Connections screen (guides; live connect arrives in Phase 2), business details and booking hours
+- [x] Help centre, "Help for this screen" panel, Ctrl+K search
+- See `supabase/README.md` to switch from demo mode to the real backend.
+
 ## Demo data and limits
 
 Everything is stored in the browser's localStorage (`hga.store.v2`). Public actions (bookings, registrations, orders,

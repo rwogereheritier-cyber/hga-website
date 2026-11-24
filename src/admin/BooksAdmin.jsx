@@ -4,8 +4,9 @@ import { money, slugify } from '../lib/format';
 import { fieldClass } from '../lib/forms';
 import { upsertItem, useStore } from '../lib/store';
 import { toast } from '../lib/toast';
-import { AdminHeader, Btn, ImageUpload, Modal, Status, Table } from './ui';
+import { AdminHeader, Btn, Modal, Status, Table } from './ui';
 import { td } from './styles';
+import { PhotoField } from './PhotoPicker';
 
 const FORMATS = ['eBook', 'PDF', 'Paperback'];
 
@@ -87,7 +88,7 @@ function BookForm({ initial, onClose }) {
           </select>
         </Field>
         <div className="sm:col-span-2">
-          <ImageUpload value={f.cover} onChange={(cover) => setF({ ...f, cover })} />
+          <PhotoField value={f.cover} onChange={(cover) => setF({ ...f, cover })} />
         </div>
       </div>
     </Modal>

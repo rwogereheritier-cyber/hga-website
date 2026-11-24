@@ -9,7 +9,7 @@ import { consultations } from '../data/services';
 // browser, and admin edits to events, articles and books appear on the public site.
 // Replace with API calls when a real backend is added.
 
-const KEY = 'hga.store.v2';
+const KEY = 'hga.store.v3';
 
 const seed = {
   bookings: demoBookings,
@@ -25,6 +25,23 @@ const seed = {
   categories: articleCategories,
   consultations,
   content: defaultContent,
+  team: [
+    { id: 'demo-owner', email: 'admin@hettyglobalacademy.com', full_name: 'Hetty', role: 'owner', status: 'active', last_seen_at: new Date().toISOString(), created_at: '2026-11-01T10:00:00Z' },
+    { id: 'demo-studio', email: 'studio@example.com', full_name: 'HGA build team', role: 'admin', status: 'active', last_seen_at: '2026-11-24T09:00:00Z', created_at: '2026-11-01T10:05:00Z' },
+  ],
+  media: [],
+  siteImages: {},
+  integrations: {
+    google_calendar: { status: 'not_connected' },
+    zoom: { status: 'not_connected' },
+    stripe: { status: 'not_connected' },
+    email: { status: 'not_connected' },
+  },
+  settings: {
+    business: { name: 'Hetty Global Academy', email: 'hello@hettyglobalacademy.com', currency: 'CAD', timezone: 'America/Toronto', confirmed: false },
+    availability: { days: [1, 2, 3, 4, 5], start: '09:00', end: '17:00', slotMinutes: 90, minNoticeHours: 24, maxAdvanceDays: 60 },
+    checklistHidden: false,
+  },
 };
 
 export const SEED = seed;

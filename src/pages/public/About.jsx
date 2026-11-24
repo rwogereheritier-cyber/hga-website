@@ -20,7 +20,7 @@ export default function About() {
       <PageHero eyebrow="About us" title="Education that opens doors." lead="Hetty Global Academy supports nurses and healthcare professionals through education, mentorship and English language development." />
 
       <div className="container-page">
-        <ImagePlaceholder label="Hetty with learners" className="h-[360px] md:h-[600px]" />
+        <ImagePlaceholder slot="about.hero" label="Hetty with learners" className="h-[360px] w-full md:h-[600px]" />
       </div>
 
       <section className="container-page section grid gap-12 md:grid-cols-[1fr_1.3fr] md:gap-24">
@@ -66,7 +66,7 @@ export default function About() {
 
       <section className="container-page flex flex-wrap items-center gap-12 pb-section-sm md:gap-24 md:pb-section">
         <Reveal className="w-full flex-1 basis-[380px]">
-          <ImagePlaceholder label="Hetty, founder" className="h-[440px] md:h-[560px]" />
+          <ImagePlaceholder slot="about.founder" label="Hetty, founder" className="h-[440px] w-full md:h-[560px]" />
         </Reveal>
         <Reveal delay={0.06} className="flex flex-1 basis-[420px] flex-col gap-6">
           <span className="eyebrow">Meet the founder</span>

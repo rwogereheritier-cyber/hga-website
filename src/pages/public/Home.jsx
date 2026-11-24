@@ -73,7 +73,7 @@ function Paths() {
               <span className="text-small font-medium text-burgundy">
                 Learn more <span aria-hidden="true">›</span>
               </span>
-              <ImagePlaceholder label={p.photo} className="mt-auto h-60 !bg-[#ECE8E2]" />
+              <ImagePlaceholder slot={`programme.${p.slug}`} label={p.photo} className="mt-auto h-60 w-full !bg-[#ECE8E2]" />
             </Link>
           </Reveal>
         ))}
@@ -88,7 +88,7 @@ function Founder() {
     <section className="bg-ivory">
       <div className="container-page section flex flex-wrap items-center gap-12 md:gap-24">
         <Reveal className="w-full flex-1 basis-[420px]">
-          <ImagePlaceholder label="Hetty, candid" tone="ivory" className="h-[440px] md:h-[600px]" />
+          <ImagePlaceholder slot="home.founder" label="Hetty, candid" tone="ivory" className="h-[440px] w-full md:h-[600px]" />
         </Reveal>
         <Reveal delay={0.08} className="flex flex-1 basis-[420px] flex-col gap-7">
           <span className="eyebrow">Meet the founder</span>
@@ -281,7 +281,7 @@ export default function Home() {
     <>
       <Hero />
       <div className="container-page">
-        <ImagePlaceholder label="Hetty, professional portrait" className="h-[420px] md:h-[640px]" />
+        <ImagePlaceholder slot="home.hero" label="Hetty, professional portrait" className="h-[420px] w-full md:h-[640px]" />
       </div>
       <Stats />
       <Paths />

@@ -5,10 +5,12 @@ import { toast } from '../lib/toast';
 import { fmtDateTime } from './metrics';
 import { AdminHeader, Btn, Details, Modal, SearchInput, Select, Status, Table, Tabs } from './ui';
 import { td } from './styles';
+import { useSession } from './auth';
+import { canEdit } from './permissions';
 
 const STATUSES = ['Pending', 'Confirmed', 'Completed', 'Cancelled'];
 
-function BookingModal({ booking, serviceName, onClose }) {
+function BookingModal({ booking, serviceName, onClose, editable }) {
   const [status, setStatus] = useState(booking.status);
   const [confirmCancel, setConfirmCancel] = useState(false);
 
@@ -26,7 +28,7 @@ function BookingModal({ booking, serviceName, onClose }) {
       title={`Booking ${booking.ref}`}
       onClose={onClose}
       footer={
-        confirmCancel ? (
+        !editable ? null : confirmCancel ? (
           <>
             <span className="mr-auto self-center text-[14px] text-danger">Cancel this booking and refund the client?</span>
             <Btn variant="ghost" onClick={() => setConfirmCancel(false)}>
@@ -74,7 +76,7 @@ function BookingModal({ booking, serviceName, onClose }) {
       </div>
       <label className="flex flex-col gap-1.5 text-caption text-ink-muted">
         Status
-        <select value={status} onChange={(e) => setStatus(e.target.value)} className="h-11 rounded-md border border-[#E2DED8] px-3 text-[15px] text-charcoal">
+        <select disabled={!editable} value={status} onChange={(e) => setStatus(e.target.value)} className="h-11 rounded-md border border-[#E2DED8] px-3 text-[15px] text-charcoal">
           {STATUSES.map((s) => (
             <option key={s}>{s}</option>
           ))}
@@ -87,6 +89,7 @@ function BookingModal({ booking, serviceName, onClose }) {
 export default function Bookings() {
   const bookings = useStore('bookings');
   const consultations = useStore('consultations');
+  const { profile } = useSession();
   const [q, setQ] = useState('');
   const [status, setStatus] = useState('All');
   const [service, setService] = useState('All services');
@@ -156,7 +159,7 @@ export default function Bookings() {
           </tr>
         ))}
       </Table>
-      {current && <BookingModal booking={current} serviceName={nameOf(current.serviceId)} onClose={() => setOpen(null)} />}
+      {current && <BookingModal booking={current} serviceName={nameOf(current.serviceId)} onClose={() => setOpen(null)} editable={canEdit(profile.role, 'bookings')} />}
     </div>
   );
 }
